@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D6175D62A86F0E800C4FFC4 /* AddEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6175D52A86F0E800C4FFC4 /* AddEventView.swift */; };
 		2D776DA22A859E7400035754 /* ChronoServiceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D776DA12A859E7400035754 /* ChronoServiceApp.swift */; };
 		2D776DA42A859E7400035754 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D776DA32A859E7400035754 /* ContentView.swift */; };
 		2D776DA62A859E7600035754 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D776DA52A859E7600035754 /* Assets.xcassets */; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2D6175D52A86F0E800C4FFC4 /* AddEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventView.swift; sourceTree = "<group>"; };
 		2D776D9E2A859E7400035754 /* ChronoService.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChronoService.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D776DA12A859E7400035754 /* ChronoServiceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChronoServiceApp.swift; sourceTree = "<group>"; };
 		2D776DA32A859E7400035754 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 			children = (
 				2D776DA12A859E7400035754 /* ChronoServiceApp.swift */,
 				2D776DA32A859E7400035754 /* ContentView.swift */,
+				2D6175D52A86F0E800C4FFC4 /* AddEventView.swift */,
 				2D776DA52A859E7600035754 /* Assets.xcassets */,
 				2D776DA72A859E7600035754 /* ChronoService.entitlements */,
 				2D776DA82A859E7600035754 /* Preview Content */,
@@ -260,6 +263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2D776DA42A859E7400035754 /* ContentView.swift in Sources */,
+				2D6175D62A86F0E800C4FFC4 /* AddEventView.swift in Sources */,
 				2D776DA22A859E7400035754 /* ChronoServiceApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
