@@ -11,8 +11,9 @@ struct ContentView: View {
     
     @State var isPopoverPresented = false
     @State private var selection = "Year"
+    @State var events: [Event] = []
     let timeOptions = ["Year", "Month", "Day"]
-
+    
     var body: some View {
         VStack {
             // buttons to control how many years
@@ -21,7 +22,7 @@ struct ContentView: View {
                     Image(systemName: "plus")
                 }.buttonStyle(.borderedProminent)
                     .frame(alignment: .bottom).popover(isPresented: $isPopoverPresented) {
-                        AddEventView()
+                        AddEventView(isPopoverPresented: $isPopoverPresented, events: $events)
                     }
                 
                 // dropdown to control timeline view
@@ -33,32 +34,52 @@ struct ContentView: View {
                             .pickerStyle(.menu)
             }.padding(Edge.Set.bottom, 500)
             
+            List{
+                ForEach(self.events, id:\.self){ event in
+                    Text("\(event.date): \(event.text)")
+                }
+            }
+            
             // circles for event pictures
             HStack {
+                
+                ForEach(self.events, id:\.self) {event in
+                    // 1
+                    Circle()
+                        .strokeBorder(Color.blue,lineWidth: 1)
+                        .frame(width: 10, height: 10).offset(x: event.date.timeIntervalSince(Date.now)/8640, y: 12)
+                }
                 // 1
-                Circle()
-                    .strokeBorder(Color.blue,lineWidth: 1)
-                    .frame(width: 10, height: 10).offset(x: 50, y: 12)
-                // 2
-                Circle()
-                    .strokeBorder(Color.blue,lineWidth: 1)
-                    .frame(width: 10, height: 10).offset(x:64, y: 12)
-                // 3
-                Circle()
-                    .strokeBorder(Color.blue,lineWidth: 1)
-                    .frame(width: 10, height: 10).offset(x: 75, y: 12)
+//                Circle()
+//                    .strokeBorder(Color.blue,lineWidth: 1)
+//                    .frame(width: 10, height: 10).offset(x: 50, y: 12)
+//                // 2
+//                Circle()
+//                    .strokeBorder(Color.blue,lineWidth: 1)
+//                    .frame(width: 10, height: 10).offset(x:64, y: 12)
+//                // 3
+//                Circle()
+//                    .strokeBorder(Color.blue,lineWidth: 1)
+//                    .frame(width: 10, height: 10).offset(x: 75, y: 12)
             }.padding(Edge.Set.leading, -155).padding(Edge.Set.bottom, -10)
             
             // ticks for events and years
             HStack(alignment: .bottom, spacing: 10) {
+                
+                ForEach(self.events, id:\.self) {event in
+                    // 1
+                    Divider().frame(height: 20).background(.blue).offset(x: event.date.timeIntervalSince(Date.now)/8640).padding(Edge.Set.bottom, -10)
+                }
+                
+//                // 1
+//                Divider().frame(height: 20).background(.blue).offset(x: 40).padding(Edge.Set.bottom, -10)
+//                // 2
+//                Divider().frame(height: 20).background(.blue).offset(x: 60).padding(Edge.Set.bottom, -10)
+//                // 3
+//                Divider().frame(height: 20).background(.blue).offset(x: 80).padding(Edge.Set.bottom, -10)
+                
                 // year beginning
                 Divider().frame(height: 40).background(.blue).offset(x: 0).padding(Edge.Set.bottom, -20)
-                // 1
-                Divider().frame(height: 20).background(.blue).offset(x: 40).padding(Edge.Set.bottom, -10)
-                // 2
-                Divider().frame(height: 20).background(.blue).offset(x: 60).padding(Edge.Set.bottom, -10)
-                // 3
-                Divider().frame(height: 20).background(.blue).offset(x: 80).padding(Edge.Set.bottom, -10)
                 
                 // year middle
                 Divider().frame(height: 40).background(.blue).offset(x: 100).padding(Edge.Set.bottom, -20)
@@ -97,8 +118,7 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 
-struct ButrtonView: View {
-    var body: some View {
-        Image(systemName: "plus")
-    }
+struct Event: Hashable {
+    let date: Date
+    let text: String
 }
