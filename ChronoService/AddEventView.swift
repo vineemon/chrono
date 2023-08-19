@@ -48,7 +48,8 @@ struct AddEventView: View {
     
     
     func submitEvent() {
-        self.events.append(Event(date: date, text: text))
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: date)
+        self.events.append(Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, text: text))
         self.isPopoverPresented = false
     }
 }
