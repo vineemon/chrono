@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var selection = "Year"
     @State var events: [Event] = []
     let timeOptions = ["Year", "Month", "Day"]
+    let date = Date.now
     
     var body: some View {
         VStack {
@@ -27,88 +28,57 @@ struct ContentView: View {
                 
                 // dropdown to control timeline view
                 Picker("Select a timeline view", selection: $selection) {
-                                ForEach(timeOptions, id: \.self) {
-                                    Text($0)
-                                }
-                            }
-                            .pickerStyle(.menu)
-            }.padding(Edge.Set.bottom, 500)
-            
-            List{
-                ForEach(self.events, id:\.self){ event in
-                    Text("\(event.date): \(event.text)")
+                    ForEach(timeOptions, id: \.self) {
+                        Text($0)
+                    }
                 }
+                .pickerStyle(.menu)
             }
-            
-            // circles for event pictures
-            HStack {
-                
-                ForEach(self.events, id:\.self) {event in
-                    // 1
-                    Circle()
-                        .strokeBorder(Color.blue,lineWidth: 1)
-                        .frame(width: 10, height: 10).offset(x: event.date.timeIntervalSince(Date.now)/8640, y: 12)
+            List {
+                Section {
+                    ForEach(self.events, id:\.self){ event in
+                        Text("\(event.date.formatted()): \(event.text)")
+                    }
+                } header: {
+                    Text("Chrono Events")
                 }
-                // 1
-//                Circle()
-//                    .strokeBorder(Color.blue,lineWidth: 1)
-//                    .frame(width: 10, height: 10).offset(x: 50, y: 12)
-//                // 2
-//                Circle()
-//                    .strokeBorder(Color.blue,lineWidth: 1)
-//                    .frame(width: 10, height: 10).offset(x:64, y: 12)
-//                // 3
-//                Circle()
-//                    .strokeBorder(Color.blue,lineWidth: 1)
-//                    .frame(width: 10, height: 10).offset(x: 75, y: 12)
-            }.padding(Edge.Set.leading, -155).padding(Edge.Set.bottom, -10)
-            
-            // ticks for events and years
-            HStack(alignment: .bottom, spacing: 10) {
-                
-                ForEach(self.events, id:\.self) {event in
-                    // 1
-                    Divider().frame(height: 20).background(.blue).offset(x: event.date.timeIntervalSince(Date.now)/8640).padding(Edge.Set.bottom, -10)
+            }.listStyle(.insetGrouped).padding(.bottom, 20).scrollContentBackground(.hidden)
+            ScrollView(.horizontal) {
+                Divider().background(.blue).frame(height: 1).padding(.top, 40)
+                HStack() {
+                    ForEach(0..<20) { x in
+                        TimelineView(events: $events, date: self.date, year: 2023+x, x: x)
+                    }
                 }
-                
-//                // 1
-//                Divider().frame(height: 20).background(.blue).offset(x: 40).padding(Edge.Set.bottom, -10)
-//                // 2
-//                Divider().frame(height: 20).background(.blue).offset(x: 60).padding(Edge.Set.bottom, -10)
-//                // 3
-//                Divider().frame(height: 20).background(.blue).offset(x: 80).padding(Edge.Set.bottom, -10)
-                
-                // year beginning
-                Divider().frame(height: 40).background(.blue).offset(x: 0).padding(Edge.Set.bottom, -20)
-                
-                // year middle
-                Divider().frame(height: 40).background(.blue).offset(x: 100).padding(Edge.Set.bottom, -20)
-                
-                // year end
-                Divider().frame(height: 40).background(.blue).offset(x: 230).padding(Edge.Set.bottom, -20)
-                
-            }.padding(Edge.Set.leading, -150)
-            
-            Divider().background(.blue)
-            
-            
-            // years
-            HStack(alignment: .top, spacing: 10) {
-                // year beginning
-                Text("2023").offset(x: -10)
-                // 2
-                Text("2024").padding(Edge.Set.leading, 10).offset(x: 65)
-                // year end
-                Text("2025").padding(Edge.Set.leading, 10).offset(x: 150)
-            }.padding(Edge.Set.bottom, -13).padding(Edge.Set.leading, -150).padding(Edge.Set.top, 13)
+            }.frame(height: 100)
         }
-        .padding()
     }
-    
+        
     func addEvent() {
         self.isPopoverPresented = true
     }
+}
+
+
+struct TimelineView: View {
+    @Binding var events: [Event]
+    var date: Date
+    var year: Int
+    var x: Int
     
+    var body: some View {
+        ZStack() {
+            ForEach(self.events, id:\.self) {event in
+                // 1
+                Circle().foregroundColor(.blue).frame(width: 10, height: 10).position(x: (event.date.timeIntervalSince(self.date)/20000) + 20, y: -10)
+                Divider().frame(width: 1, height: 20).background(.blue).position(x: (event.date.timeIntervalSince(self.date)/20000) + 20)
+            }.offset(y: -20)
+            HStack(spacing: 0.0) {
+                Divider().frame(height: 40).background(.blue).position(x: CGFloat(100*x + 20))
+            }.padding(Edge.Set.bottom, -20)
+            Text(String(year)).position(x: CGFloat(x*100 + 20), y: 40)
+        }.frame(width: 140, height: 70)
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {

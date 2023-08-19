@@ -24,7 +24,7 @@ struct AddEventView: View {
                 DatePicker(
                     "Event Date",
                     selection: $date,
-                    displayedComponents: [.date]
+                    displayedComponents: [.date, .hourAndMinute]
                 )
             }
             HStack{
