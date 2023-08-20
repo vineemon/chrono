@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct ContentView: View {
     
     @State var isPopoverPresented = false
     @State private var selection = "Year"
     @State var events: [Event] = []
+    @State var shownEvent: Event = Event(date: Date.now, year: 0, month: 0, day: 0, hour: 0, text: "", photo: nil)
+    @State var showEvents: [Bool] = []
     let timeOptions = ["Year", "Month", "Day"]
     let date = Date.now
     let timelineGranularity = [
@@ -28,7 +31,7 @@ struct ContentView: View {
                     Image(systemName: "plus")
                 }.buttonStyle(.borderedProminent)
                     .frame(alignment: .bottom).popover(isPresented: $isPopoverPresented) {
-                        AddEventView(isPopoverPresented: $isPopoverPresented, events: $events)
+                        AddEventView(isPopoverPresented: $isPopoverPresented, events: $events, showEvents: $showEvents)
                     }
                 
                 // dropdown to control timeline view
@@ -52,9 +55,16 @@ struct ContentView: View {
                 Divider().background(.blue).frame(height: 1).padding(.top, 40)
                 HStack() {
                     ZStack() {
-                        ForEach(self.events, id:\.self) {event in
-                            Circle().foregroundColor(.blue).frame(width: 10, height: 10).position(x: CGFloat(getEventTimeDifference(event: event) + 20)).offset(y: -30)
-                            Divider().frame(width: 1, height: 20).background(.blue).position(x: CGFloat(getEventTimeDifference(event: event) + 20)).offset(y: -20)
+                        ForEach(0..<events.count, id:\.self) {i in
+                            Button(action: { showEventDetails(event: events[i], i: i) }) {
+                                        Text("")
+                                            .frame(width: 10, height: 10)
+                                            .background(.blue)
+                                            .clipShape(Circle())
+                            }.position(x: CGFloat(getEventTimeDifference(event: events[i]) + 20)).offset(y: -30).popover(isPresented: $showEvents[i]) {
+                                ShowEventView(isPopoverPresented: $showEvents[i], event: $shownEvent)
+                            }
+                            Divider().frame(width: 1, height: 20).background(.blue).position(x: CGFloat(getEventTimeDifference(event: events[i]) + 20)).offset(y: -20)
                         }
                     }
                     ForEach(0..<20) { x in
@@ -67,6 +77,11 @@ struct ContentView: View {
         
     func addEvent() {
         self.isPopoverPresented = true
+    }
+    
+    func showEventDetails(event: Event, i: Int) {
+        self.shownEvent = event
+        self.showEvents[i] = true
     }
     
     func getEventTimeDifference(event: Event) -> Int {
@@ -135,4 +150,5 @@ struct Event: Hashable {
     let day: Int
     let hour: Int
     let text: String
+    let photo: PhotosPickerItem?
 }
