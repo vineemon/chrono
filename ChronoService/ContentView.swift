@@ -88,9 +88,9 @@ struct ContentView: View {
         if (selection == "Year") {
             return 20 * event.month + 240 * (event.year - 2020)
         } else if (selection == "Month") {
-            return 2 * event.day + 240 * (event.month - 1)
+            return 2 * (event.day - 1) + 240 * event.month
         } else {
-            return 8 * event.hour + 240 * (event.day - 1)
+            return 10 * event.hour + 240 * (event.day - 1)
         }
     }
 }

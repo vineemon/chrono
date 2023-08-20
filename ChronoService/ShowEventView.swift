@@ -12,27 +12,26 @@ struct ShowEventView: View {
     @Binding var isPopoverPresented: Bool
     @Binding var event: Event
     
-    @State var date = Date()
-    @State var text = ""
-    @State private var selectedImageData: Data? = nil
+    @State private var eventImage: Image?
     
     var body: some View {
         VStack {
-            Text(event.text)
-//            HStack{
-//                if let selectedImageData,
-//                   let uiImage = UIImage(data: selectedImageData) {
-//                    Image(uiImage: uiImage)
-//                        .resizable()
-//                        .scaledToFit()
-//                        .frame(width: 250, height: 250)
-//                }
-//            }.onAppear {
-//                // Retrieve selected asset in the form of Data
-//                if let data = try? await event.photo?.loadTransferable(type: Data.self) {
-//                    selectedImageData = data
-//                }
-//            }
+            if let eventImage {
+                eventImage
+                    .resizable()
+                    .scaledToFit()
+                    .cornerRadius(10)
+                    .shadow(radius: 10)
+                    .frame(width: 300, height: 300)
+            }
+            Text("Description: " + event.text)
+        }.task {
+            if let data = try? await event.photo?.loadTransferable(type: Data.self) {
+                if let uiImage = UIImage(data: data) {
+                    eventImage = Image(uiImage: uiImage)
+                    return
+                }
+            }
         }.padding()
     }
 }

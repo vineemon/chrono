@@ -21,11 +21,6 @@ struct AddEventView: View {
         
         VStack {
             
-            PhotosPicker(selection: $photo,
-                         matching: .images) {
-                Text("Choose your favorite pictures from the event.")
-            }
-            
             HStack{
                 DatePicker(
                     "Event Date:",
@@ -37,6 +32,11 @@ struct AddEventView: View {
                 Text("Description:")
                 TextField("Today, I got a dog!", text: $text)
             }
+            
+            PhotosPicker(selection: $photo,
+                         matching: .images) {
+                Text("Photos:")
+            }.frame(maxWidth: .infinity, alignment: .leading)
             
 
             
