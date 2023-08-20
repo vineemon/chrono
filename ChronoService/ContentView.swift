@@ -14,14 +14,13 @@ struct ContentView: View {
     @State var events: [Event] = []
     let timeOptions = ["Year", "Month", "Day"]
     let date = Date.now
+    let timelineGranularity = [
+        "Year" : Calendar.current.dateComponents([.year], from: Date.now).year! - 3,
+        "Month" : 0,
+        "Day" : 0
+    ]
     
     var body: some View {
-        let components = Calendar.current.dateComponents([.year, .month, .day], from: date)
-        let timelineGranularity = [
-            "Year" : components.year ?? 0,
-            "Month" : components.month ?? 0,
-            "Day" : components.day ?? 0
-        ]
         VStack {
             // buttons to control how many years
             HStack {
@@ -52,8 +51,14 @@ struct ContentView: View {
             ScrollView(.horizontal) {
                 Divider().background(.blue).frame(height: 1).padding(.top, 40)
                 HStack() {
+                    ZStack() {
+                        ForEach(self.events, id:\.self) {event in
+                            Circle().foregroundColor(.blue).frame(width: 10, height: 10).position(x: CGFloat(getEventTimeDifference(event: event) + 20)).offset(y: -30)
+                            Divider().frame(width: 1, height: 20).background(.blue).position(x: CGFloat(getEventTimeDifference(event: event) + 20)).offset(y: -20)
+                        }
+                    }
                     ForEach(0..<20) { x in
-                        TimelineView(events: $events, selection: $selection, date: self.date, interval: timelineGranularity[selection]!+x, x: x)
+                        TimelineView(selection: $selection, interval: timelineGranularity[selection]!+x, x: x)
                     }
                 }
             }.frame(height: 100)
@@ -63,13 +68,21 @@ struct ContentView: View {
     func addEvent() {
         self.isPopoverPresented = true
     }
+    
+    func getEventTimeDifference(event: Event) -> Int {
+        if (selection == "Year") {
+            return 20 * event.month + 240 * (event.year - 2020)
+        } else if (selection == "Month") {
+            return 2 * event.day + 240 * (event.month - 1)
+        } else {
+            return 8 * event.hour + 240 * (event.day - 1)
+        }
+    }
 }
 
 
 struct TimelineView: View {
-    @Binding var events: [Event]
     @Binding var selection: String
-    var date: Date
     var interval: Int
     var x: Int
     
@@ -90,28 +103,11 @@ struct TimelineView: View {
     
     var body: some View {
         ZStack() {
-            ForEach(self.events, id:\.self) {event in
-                // only add if date is in range
-                if (getEventTime(event: event) == interval) {
-                    Circle().foregroundColor(.blue).frame(width: 10, height: 10).position(x: (event.date.timeIntervalSince(self.date)/20000) + 20, y: -10).offset(y: -20)
-                    Divider().frame(width: 1, height: 20).background(.blue).position(x: (event.date.timeIntervalSince(self.date)/20000) + 20).offset(y: -20)
-                }
-            }
             HStack(spacing: 0.0) {
                 Divider().frame(height: 40).background(.blue).position(x: CGFloat(100*x + 20))
             }.padding(Edge.Set.bottom, -20)
             Text(getIntervalString()).position(x: CGFloat(x*100 + 20), y: 40)
         }.frame(width: 140, height: 70)
-    }
-    
-    func getEventTime(event: Event) -> Int {
-        if (selection == "Year") {
-            return event.year
-        } else if (selection == "Month") {
-            return event.month
-        } else {
-            return event.day
-        }
     }
     
     func getIntervalString() -> String {
@@ -120,7 +116,7 @@ struct TimelineView: View {
         } else if (selection == "Month") {
             return monthString[interval % 12]!
         } else {
-            return String(interval % 31)
+            return String(interval % 31 + 1)
         }
     }
 }
@@ -137,5 +133,6 @@ struct Event: Hashable {
     let year: Int
     let month: Int
     let day: Int
+    let hour: Int
     let text: String
 }

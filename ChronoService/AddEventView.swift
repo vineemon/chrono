@@ -20,21 +20,21 @@ struct AddEventView: View {
         
         VStack {
             
+            PhotosPicker(selection: $selectedItems,
+                         matching: .images) {
+                Text("Choose your favorite pictures from the event.")
+            }
+            
             HStack{
                 DatePicker(
-                    "Event Date",
+                    "Event Date:",
                     selection: $date,
                     displayedComponents: [.date, .hourAndMinute]
                 )
             }
             HStack{
                 Text("Description:")
-                TextField("We were able to go so much", text: $text)
-            }
-        
-            PhotosPicker(selection: $selectedItems,
-                         matching: .images) {
-                Text("Choose your favorite pictures from the event.")
+                TextField("Today, I got a dog!", text: $text)
             }
             
 
@@ -43,13 +43,13 @@ struct AddEventView: View {
                 Text("Submit")
             }.buttonStyle(.borderedProminent)
                 .frame(alignment: .bottom)
-        }
+        }.padding()
     }
     
     
     func submitEvent() {
-        let components = Calendar.current.dateComponents([.year, .month, .day], from: date)
-        self.events.append(Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, text: text))
+        let components = Calendar.current.dateComponents([.year, .month, .day, .hour], from: date)
+        self.events.append(Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text))
         self.isPopoverPresented = false
     }
 }
