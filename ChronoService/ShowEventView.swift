@@ -9,7 +9,6 @@ import SwiftUI
 import PhotosUI
 
 struct ShowEventView: View {
-    @Binding var isPopoverPresented: Bool
     @Binding var event: Event
     
     @State private var eventImage: Image?
