@@ -14,13 +14,17 @@ struct AddEventView: View {
     @Binding var showEvents: [Bool]
     
     @State var date = Date()
+    @State var title = ""
     @State var text = ""
     @State var photo: PhotosPickerItem?
     
     var body: some View {
         
         VStack {
-            
+            HStack{
+                Text("Title:")
+                TextField("Dog Day!", text: $title)
+            }
             HStack{
                 DatePicker(
                     "Event Date:",
@@ -50,7 +54,7 @@ struct AddEventView: View {
     
     func submitEvent() {
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour], from: date)
-        self.events.append(Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text, photo: photo))
+        self.events.append(Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text, title: title, photo: photo))
         self.isPopoverPresented = false
         self.showEvents.append(false)
     }

@@ -16,6 +16,7 @@ struct ShowEventView: View {
     
     var body: some View {
         VStack {
+            Text("Title: " + event.title).bold()
             if let eventImage {
                 eventImage
                     .resizable()

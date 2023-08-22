@@ -12,8 +12,9 @@ struct ContentView: View {
     
     @State var isPopoverPresented = false
     @State private var selection = "Year"
+    @State private var eventImage: Image?
     @State var events: [Event] = []
-    @State var shownEvent: Event = Event(date: Date.now, year: 0, month: 0, day: 0, hour: 0, text: "", photo: nil)
+    @State var shownEvent: Event = Event(date: Date.now, year: 0, month: 0, day: 0, hour: 0, text: "", title: "", photo: nil)
     @State var showEvents: [Bool] = []
     let timeOptions = ["Year", "Month", "Day"]
     let date = Date.now
@@ -42,36 +43,45 @@ struct ContentView: View {
                 }
                 .pickerStyle(.menu)
             }
-            List {
-                Section {
-                    ForEach(self.events, id:\.self){ event in
-                        Text("\(event.date.formatted()): \(event.text)")
-                    }
-                } header: {
-                    Text("Chrono Events")
-                }
-            }.listStyle(.insetGrouped).padding(.bottom, 20).scrollContentBackground(.hidden)
-            ScrollView(.horizontal) {
-                Divider().background(.blue).frame(height: 1).padding(.top, 40)
-                HStack() {
-                    ZStack() {
-                        ForEach(0..<events.count, id:\.self) {i in
-                            Button(action: { showEventDetails(event: events[i], i: i) }) {
-                                        Text("")
-                                            .frame(width: 10, height: 10)
-                                            .background(.blue)
-                                            .clipShape(Circle())
-                            }.position(x: CGFloat(getEventTimeDifference(event: events[i]) + 20)).offset(y: -30).popover(isPresented: $showEvents[i]) {
-                                ShowEventView(isPopoverPresented: $showEvents[i], event: $shownEvent)
+            
+            ScrollView(.vertical) {
+                    HStack() {
+                        VStack{
+                            ZStack {
+                                ForEach(0..<events.count, id:\.self) {i in
+                                    Button(action: { showEventDetails(event: events[i], i: i) }) {
+                                        Text(events[i].title)
+                                    }.position(x: 40, y: CGFloat(getEventTimeDifference(event: events[i]) + 1000)).popover(isPresented: $showEvents[i]) {
+                                        ShowEventView(isPopoverPresented: $showEvents[i], event: $shownEvent)
+                                    }
+                                    Divider().frame(width: 200, height: 1).background(.blue).position(x: 50, y: CGFloat(getEventTimeDifference(event: events[i]) + 1000))
+                                    
+                                    ZStack {
+                                        if let eventImage {
+                                            eventImage
+                                                .resizable()
+                                                .scaledToFit()
+                                                .cornerRadius(10)
+                                                .shadow(radius: 10)
+                                                .frame(width: 50, height: 50).position(x: 50, y: CGFloat(getEventTimeDifference(event: events[i]) + 1000))
+                                        }
+                                    }.task {
+                                        if let data = try? await events[i].photo?.loadTransferable(type: Data.self) {
+                                            if let uiImage = UIImage(data: data) {
+                                                eventImage = Image(uiImage: uiImage)
+                                                return
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                            Divider().frame(width: 1, height: 20).background(.blue).position(x: CGFloat(getEventTimeDifference(event: events[i]) + 20)).offset(y: -20)
-                        }
-                    }
-                    ForEach(0..<20) { x in
-                        TimelineView(selection: $selection, interval: timelineGranularity[selection]!+x, x: x)
-                    }
-                }
-            }.frame(height: 100)
+                            ForEach(0..<20) { x in
+                                TimelineView(selection: $selection, interval: timelineGranularity[selection]!+x, x: x)
+                            }
+                        }.frame(width: 300)
+                        Divider().background(.blue).frame(height: 1000)
+                    }.frame(height: 1000)
+            }.padding()
         }
     }
         
@@ -117,12 +127,12 @@ struct TimelineView: View {
     ]
     
     var body: some View {
-        ZStack() {
-            HStack(spacing: 0.0) {
-                Divider().frame(height: 40).background(.blue).position(x: CGFloat(100*x + 20))
-            }.padding(Edge.Set.bottom, -20)
-            Text(getIntervalString()).position(x: CGFloat(x*100 + 20), y: 40)
-        }.frame(width: 140, height: 70)
+        HStack() {
+            Text(getIntervalString()).position(y: CGFloat(100*x + 1000))
+            VStack(spacing: 0.0) {
+                Divider().frame(width: 200).background(.blue).position(x: 50, y: CGFloat(100*x + 1000))
+            }.padding(Edge.Set.trailing, -20)
+        }.frame(width: 200, height: 140)
     }
     
     func getIntervalString() -> String {
@@ -150,5 +160,6 @@ struct Event: Hashable {
     let day: Int
     let hour: Int
     let text: String
+    let title: String
     let photo: PhotosPickerItem?
 }
