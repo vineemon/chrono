@@ -12,7 +12,7 @@ struct ContentView: View {
     
     @State var isPopoverPresented = false
     @State private var selection = "Year"
-    @State private var eventImage: Image?
+    @State var eventImages: [Image?] = []
     @State var events: [Event] = []
     @State var shownEvent: Event = Event(date: Date.now, year: 0, month: 0, day: 0, hour: 0, text: "", title: "", photo: nil)
     @State var showEvents: [Bool] = []
@@ -32,7 +32,7 @@ struct ContentView: View {
                     Image(systemName: "plus")
                 }.buttonStyle(.borderedProminent)
                     .frame(alignment: .bottom).popover(isPresented: $isPopoverPresented) {
-                        AddEventView(isPopoverPresented: $isPopoverPresented, events: $events, showEvents: $showEvents)
+                        AddEventView(isPopoverPresented: $isPopoverPresented, events: $events, showEvents: $showEvents, eventImages: $eventImages)
                     }
                 
                 // dropdown to control timeline view
@@ -47,40 +47,38 @@ struct ContentView: View {
             ScrollView(.vertical) {
                     HStack() {
                         VStack{
-                            ZStack {
-                                ForEach(0..<events.count, id:\.self) {i in
-                                    Button(action: { showEventDetails(event: events[i], i: i) }) {
-                                        Text(events[i].title)
-                                    }.position(x: 40, y: CGFloat(getEventTimeDifference(event: events[i]) + 1000)).popover(isPresented: $showEvents[i]) {
-                                        ShowEventView(isPopoverPresented: $showEvents[i], event: $shownEvent)
-                                    }
-                                    Divider().frame(width: 200, height: 1).background(.blue).position(x: 50, y: CGFloat(getEventTimeDifference(event: events[i]) + 1000))
-                                    
-                                    ZStack {
-                                        if let eventImage {
-                                            eventImage
+                            ForEach(0..<events.count, id:\.self) {i in
+                                // if new year, add horizontal divider
+                                if (i == 0) {
+                                    NewDateView(event: events[i])
+                                } else if (events[i - 1].year != events[i].year) {
+                                    NewDateView(event: events[i])
+                                }
+                                HStack {
+                                    if let unwrappedImage = eventImages[i] {
+                                        Button(action: { showEventDetails(event: events[i], i: i) }) {
+                                            unwrappedImage
                                                 .resizable()
                                                 .scaledToFit()
                                                 .cornerRadius(10)
                                                 .shadow(radius: 10)
-                                                .frame(width: 50, height: 50).position(x: 50, y: CGFloat(getEventTimeDifference(event: events[i]) + 1000))
+                                                .frame(width: 300, height: 200)
+                                        }.popover(isPresented: $showEvents[i]) {
+                                            ShowEventView(isPopoverPresented: $showEvents[i], event: $shownEvent)
                                         }
-                                    }.task {
-                                        if let data = try? await events[i].photo?.loadTransferable(type: Data.self) {
-                                            if let uiImage = UIImage(data: data) {
-                                                eventImage = Image(uiImage: uiImage)
-                                                return
-                                            }
+                                    }
+                                }.task {
+                                    if let data = try? await events[i].photo?.loadTransferable(type: Data.self) {
+                                        if let uiImage = UIImage(data: data) {
+                                            eventImages[i] = Image(uiImage: uiImage)
+                                            return
                                         }
                                     }
                                 }
                             }
-                            ForEach(0..<20) { x in
-                                TimelineView(selection: $selection, interval: timelineGranularity[selection]!+x, x: x)
-                            }
                         }.frame(width: 300)
                         Divider().background(.blue).frame(height: 1000)
-                    }.frame(height: 1000)
+                    }
             }.padding()
         }
     }
@@ -101,6 +99,19 @@ struct ContentView: View {
             return 2 * (event.day - 1) + 240 * event.month
         } else {
             return 10 * event.hour + 240 * (event.day - 1)
+        }
+    }
+}
+
+struct NewDateView: View {
+    var event: Event
+
+    var body: some View {
+        HStack {
+            Text(String(event.year))
+            VStack {
+                Divider().frame(width: 250).background(.blue)
+            }
         }
     }
 }
