@@ -12,50 +12,61 @@ struct ContentView: View {
     
     @State var isPopoverPresented = false
     @State private var selection = "Year"
-    @State var events: [Event] = []
+    @State var eventsList: [[Event]] = [[],[],[]]
     let timeOptions = ["Year", "Month", "Day"]
     
     var body: some View {
-        VStack {
-            // buttons to control how many years
-            HStack {
-                Button(action: addEvent) {
-                    Image(systemName: "plus")
-                }.buttonStyle(.borderedProminent)
-                    .frame(alignment: .bottom).popover(isPresented: $isPopoverPresented) {
-                        AddEventView(isPopoverPresented: $isPopoverPresented, events: $events)
-                    }
-                
-                // dropdown to control timeline view
-                Picker("Select a timeline view", selection: $selection) {
-                    ForEach(timeOptions, id: \.self) {
-                        Text($0)
-                    }
-                }
-                .pickerStyle(.menu)
-            }
-            
-            ScrollView(.vertical) {
-                    HStack() {
-                        VStack{
-                            ForEach(0..<events.count, id:\.self) {i in
-                                // if new year, add horizontal divider
-                                if (i == 0) {
-                                    NewDateView(event: events[i])
-                                } else if (events[i - 1].year != events[i].year || events[i - 1].month != events[i].month) {
-                                    NewDateView(event: events[i])
-                                }
-                                NewEventView(events: $events, i: i)
+        TabView {
+            ForEach(0..<eventsList.count, id:\.self) {i in
+                VStack {
+                    // buttons to control how many years
+                    HStack {
+                        Button(action: addEvent) {
+                            Image(systemName: "plus")
+                        }.buttonStyle(.borderedProminent)
+                            .frame(alignment: .bottom).popover(isPresented: $isPopoverPresented) {
+                                AddEventView(isPopoverPresented: $isPopoverPresented, events: $eventsList[i])
                             }
-                        }.frame(width: 300)
-                        Divider().background(.blue).frame(height: 1000)
+                        
+                        // dropdown to control timeline view
+                        Picker("Select a timeline view", selection: $selection) {
+                            ForEach(timeOptions, id: \.self) {
+                                Text($0)
+                            }
+                        }
+                        .pickerStyle(.menu)
                     }
-            }.padding()
-        }
+                    ScrollView(.vertical) {
+                        HStack() {
+                            VStack{
+                                EventScrollView(events: $eventsList[i])
+                            }.frame(width: 300)
+                            Divider().background(.blue).frame(height: 1000)
+                        }
+                    }.padding()
+                }
+            }
+        }.tabViewStyle(.page)
     }
         
     func addEvent() {
         self.isPopoverPresented = true
+    }
+}
+
+struct EventScrollView : View {
+    @Binding var events: [Event]
+    
+    var body: some View {
+        ForEach(0..<events.count, id:\.self) {i in
+            // if new year, add horizontal divider
+            if (i == 0) {
+                NewDateView(event: events[i])
+            } else if (events[i - 1].year != events[i].year || events[i - 1].month != events[i].month) {
+                NewDateView(event: events[i])
+            }
+            NewEventView(events: $events, i: i)
+        }
     }
 }
 
@@ -104,9 +115,12 @@ struct NewDateView: View {
 
     var body: some View {
         HStack {
+            VStack {
+                Divider().frame(width: 100).background(.blue)
+            }
             Text(monthString[event.month  - 1]! + " " + String(event.year))
             VStack {
-                Divider().frame(width: 200).background(.blue)
+                Divider().frame(width: 100).background(.blue)
             }
         }
     }
