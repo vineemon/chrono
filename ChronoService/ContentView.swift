@@ -9,44 +9,53 @@ import SwiftUI
 import PhotosUI
 
 struct ContentView: View {
+    init() {
+            UIPageControl.appearance().currentPageIndicatorTintColor = .systemBlue
+            UIPageControl.appearance().pageIndicatorTintColor = .gray
+            UIPageControl.appearance().tintColor = .gray
+        }
     
     @State var isPopoverPresented = false
     @State private var selection = "Year"
     @State var eventsList: [[Event]] = [[],[],[]]
+    @State var timelineNames: [String] = ["Priyanka", "Dosa", "Aneet"]
+    @State var timelineColors: [Color] = [.blue, .red, .green]
     let timeOptions = ["Year", "Month", "Day"]
     
     var body: some View {
-        TabView {
-            ForEach(0..<eventsList.count, id:\.self) {i in
-                VStack {
-                    // buttons to control how many years
-                    HStack {
-                        Button(action: addEvent) {
-                            Image(systemName: "plus")
-                        }.buttonStyle(.borderedProminent)
-                            .frame(alignment: .bottom).popover(isPresented: $isPopoverPresented) {
-                                AddEventView(isPopoverPresented: $isPopoverPresented, events: $eventsList[i])
+        NavigationView {
+            TabView {
+                ForEach(0..<eventsList.count, id:\.self) {i in
+                    VStack {
+                        HStack {
+                            Button(action: addEvent) {
+                                Image(systemName: "plus")
+                            }.buttonStyle(.borderedProminent)
+                                .popover(isPresented: $isPopoverPresented) {
+                                    AddEventView(isPopoverPresented: $isPopoverPresented, events: $eventsList[i])
+                                }
+                            Text(timelineNames[i]).font(.system(size: 24)).bold().foregroundColor(.blue)
+                        }.padding(.horizontal, 80)
+                        ScrollView(.vertical) {
+                            HStack() {
+                                VStack{
+                                    EventScrollView(events: $eventsList[i])
+                                    Spacer()
+                                }.frame(width: 300)
+                                Divider().frame(width: 1, height: 200 * CGFloat(eventsList[i].count + 3)).overlay(timelineColors[i])
                             }
-                        
-                        // dropdown to control timeline view
-                        Picker("Select a timeline view", selection: $selection) {
-                            ForEach(timeOptions, id: \.self) {
-                                Text($0)
-                            }
-                        }
-                        .pickerStyle(.menu)
+                        }.padding()
                     }
-                    ScrollView(.vertical) {
-                        HStack() {
-                            VStack{
-                                EventScrollView(events: $eventsList[i])
-                            }.frame(width: 300)
-                            Divider().background(.blue).frame(height: 1000)
-                        }
-                    }.padding()
+                }
+            }.tabViewStyle(.page).toolbar {
+                Menu {
+                    Text("Create a New Timeline")
+                    Text("Settings")
+                } label: {
+                    Label("", systemImage: "line.3.horizontal")
                 }
             }
-        }.tabViewStyle(.page)
+        }
     }
         
     func addEvent() {
