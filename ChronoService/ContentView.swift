@@ -15,11 +15,13 @@ struct ContentView: View {
             UIPageControl.appearance().tintColor = .gray
         }
     
+    @EnvironmentObject var firestoreManager: FirestoreManager
     @State var isPopoverPresented = false
     @State var eventsList: [[Event]] = [[],[],[]]
     @State var timelineNames: [String] = ["Priyanka & Me", "Dosa & Me", "Aneet & Me"]
     @State var timelineColors: [Color] = [.blue, .red, .green]
     @State var isEditTimelinesActive = false
+    @State var username = "test@gmail.com"
     
     var body: some View {
         NavigationStack {
@@ -38,6 +40,11 @@ struct ContentView: View {
                         } label: {
                             Label("Settings", systemImage: "gearshape.fill")
                         }
+                        Button {
+                            self.isEditTimelinesActive = true
+                        } label: {
+                            Label("Logout", systemImage: "rectangle.portrait.and.arrow.right.fill")
+                        }
                     } label: {
                         Label("", systemImage: "line.3.horizontal.decrease")
                     }
@@ -45,7 +52,8 @@ struct ContentView: View {
             }.padding()
             HStack {
                 TabView {
-                    ForEach(0..<eventsList.count, id:\.self) {i in
+                    ForEach(0..<firestoreManager.events.count, id:\.self) {i in
+                        Text("My restaurant: \(firestoreManager.events[i].title)")
                         VStack {
                             HStack {
                                 Text(timelineNames[i]).font(.system(size: 24)).bold().foregroundColor(.blue)
@@ -53,7 +61,7 @@ struct ContentView: View {
                                     Image(systemName: "plus")
                                 }.buttonStyle(.borderedProminent)
                                     .popover(isPresented: $isPopoverPresented) {
-                                        AddEventView(isPopoverPresented: $isPopoverPresented, events: $eventsList[i])
+                                        AddEventView(isPopoverPresented: $isPopoverPresented, events: $eventsList[i], username: $username).environmentObject(firestoreManager)
                                     }
                             }.padding()
                             ScrollView(.vertical) {
@@ -167,5 +175,6 @@ struct Event {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .environmentObject(FirestoreManager())
     }
 }

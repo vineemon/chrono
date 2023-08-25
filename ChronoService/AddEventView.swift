@@ -9,8 +9,10 @@ import SwiftUI
 import PhotosUI
 
 struct AddEventView: View {
+    @EnvironmentObject var firestoreManager: FirestoreManager
     @Binding var isPopoverPresented: Bool
     @Binding var events: [Event]
+    @Binding var username: String
     
     @State var date = Date()
     @State var title = ""
@@ -73,6 +75,7 @@ struct AddEventView: View {
         let newEvent = Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text, title: title, photo: photo, eventImage: image, showEvents: false)
         let index = self.events.insertionIndexOf(newEvent) { $0.date < $1.date }
         self.events.insert(newEvent, at: index)
+        firestoreManager.updateEvents(events: self.events, user: username)
         self.isPopoverPresented = false
     }
 }
