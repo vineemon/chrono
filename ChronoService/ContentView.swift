@@ -16,45 +16,62 @@ struct ContentView: View {
         }
     
     @State var isPopoverPresented = false
-    @State private var selection = "Year"
     @State var eventsList: [[Event]] = [[],[],[]]
-    @State var timelineNames: [String] = ["Priyanka", "Dosa", "Aneet"]
+    @State var timelineNames: [String] = ["Priyanka & Me", "Dosa & Me", "Aneet & Me"]
     @State var timelineColors: [Color] = [.blue, .red, .green]
-    let timeOptions = ["Year", "Month", "Day"]
+    @State var isCreateNewTimelineActive = false
     
     var body: some View {
-        NavigationView {
-            TabView {
-                ForEach(0..<eventsList.count, id:\.self) {i in
-                    VStack {
-                        HStack {
-                            Button(action: addEvent) {
-                                Image(systemName: "plus")
-                            }.buttonStyle(.borderedProminent)
-                                .popover(isPresented: $isPopoverPresented) {
-                                    AddEventView(isPopoverPresented: $isPopoverPresented, events: $eventsList[i])
-                                }
-                            Text(timelineNames[i]).font(.system(size: 24)).bold().foregroundColor(.blue)
-                        }.padding(.horizontal, 80)
-                        ScrollView(.vertical) {
-                            HStack() {
-                                VStack{
-                                    EventScrollView(events: $eventsList[i])
-                                    Spacer()
-                                }.frame(width: 300)
-                                Divider().frame(width: 1, height: 200 * CGFloat(eventsList[i].count + 3)).overlay(timelineColors[i])
-                            }
-                        }.padding()
+        NavigationStack {
+            VStack {
+                HStack {
+                    Text("Chrono").font(.system(size: 24)).bold()
+                    Spacer()
+                    Menu {
+                        Button {
+                            self.isCreateNewTimelineActive = true
+                        } label: {
+                            Label("Create New Timeline", systemImage: "house.fill")
+                        }
+                        Text("Delete Timeline")
+                        Button {
+                            print("at setting")
+                        } label: {
+                            Label("Settings", systemImage: "gearshape.fill")
+                        }
+                    } label: {
+                        Label("", systemImage: "line.3.horizontal")
                     }
                 }
-            }.tabViewStyle(.page).toolbar {
-                Menu {
-                    Text("Create a New Timeline")
-                    Text("Settings")
-                } label: {
-                    Label("", systemImage: "line.3.horizontal")
-                }
-            }
+            }.padding()
+            HStack {
+                TabView {
+                    ForEach(0..<eventsList.count, id:\.self) {i in
+                        VStack {
+                            HStack {
+                                Text(timelineNames[i]).font(.system(size: 24)).bold().foregroundColor(.blue)
+                                Button(action: addEvent) {
+                                    Image(systemName: "plus")
+                                }.buttonStyle(.borderedProminent)
+                                    .popover(isPresented: $isPopoverPresented) {
+                                        AddEventView(isPopoverPresented: $isPopoverPresented, events: $eventsList[i])
+                                    }
+                            }.padding()
+                            ScrollView(.vertical) {
+                                HStack() {
+                                    VStack{
+                                        EventScrollView(events: $eventsList[i])
+                                        Spacer()
+                                    }.frame(width: 300)
+                                    Divider().frame(width: 1, height: 200 * CGFloat(eventsList[i].count + 3)).overlay(timelineColors[i])
+                                }
+                            }
+                        }
+                    }
+                }.tabViewStyle(.page)
+            }.navigationDestination(isPresented: $isCreateNewTimelineActive) {
+            CreateTimelineView()
+          }
         }
     }
         
