@@ -19,7 +19,7 @@ struct ContentView: View {
     @State var eventsList: [[Event]] = [[],[],[]]
     @State var timelineNames: [String] = ["Priyanka & Me", "Dosa & Me", "Aneet & Me"]
     @State var timelineColors: [Color] = [.blue, .red, .green]
-    @State var isCreateNewTimelineActive = false
+    @State var isEditTimelinesActive = false
     
     var body: some View {
         NavigationStack {
@@ -29,18 +29,17 @@ struct ContentView: View {
                     Spacer()
                     Menu {
                         Button {
-                            self.isCreateNewTimelineActive = true
+                            self.isEditTimelinesActive = true
                         } label: {
-                            Label("Create New Timeline", systemImage: "house.fill")
+                            Label("Edit Timelines", systemImage: "plus.square.fill.on.square.fill")
                         }
-                        Text("Delete Timeline")
                         Button {
-                            print("at setting")
+                            self.isEditTimelinesActive = true
                         } label: {
                             Label("Settings", systemImage: "gearshape.fill")
                         }
                     } label: {
-                        Label("", systemImage: "line.3.horizontal")
+                        Label("", systemImage: "line.3.horizontal.decrease")
                     }
                 }
             }.padding()
@@ -69,9 +68,9 @@ struct ContentView: View {
                         }
                     }
                 }.tabViewStyle(.page)
-            }.navigationDestination(isPresented: $isCreateNewTimelineActive) {
-            CreateTimelineView()
-          }
+            }.navigationDestination(isPresented: $isEditTimelinesActive) {
+                EditTimelinesView()
+            }
         }
     }
         

@@ -64,8 +64,33 @@ struct AddEventView: View {
     
     func submitEvent() {
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour], from: date)
-        self.events.append(Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text, title: title, photo: photo, eventImage: image, showEvents: false))
-        self.events.sort{$0.date < $1.date}
+        // add event in order
+        var i = 0
+        while (i < self.events.count && self.events[i].date < date) {
+            i += 1
+        }
+        
+        let newEvent = Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text, title: title, photo: photo, eventImage: image, showEvents: false)
+        let index = self.events.insertionIndexOf(newEvent) { $0.date < $1.date }
+        self.events.insert(newEvent, at: index)
         self.isPopoverPresented = false
+    }
+}
+
+extension Array {
+    func insertionIndexOf(_ elem: Element, isOrderedBefore: (Element, Element) -> Bool) -> Int {
+        var lo = 0
+        var hi = self.count - 1
+        while lo <= hi {
+            let mid = (lo + hi)/2
+            if isOrderedBefore(self[mid], elem) {
+                lo = mid + 1
+            } else if isOrderedBefore(elem, self[mid]) {
+                hi = mid - 1
+            } else {
+                return mid // found at position mid
+            }
+        }
+        return lo // not found, would be inserted at position lo
     }
 }
