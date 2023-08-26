@@ -10,13 +10,14 @@ import PhotosUI
 
 struct ContentView: View {
     
-    @EnvironmentObject var firestoreManager: FirestoreManager
+//    @EnvironmentObject var firestoreManager: FirestoreManager
     @Binding var timelines: [Timeline]
     @Binding var eventsPicsList: [[EventPic]]
     @State var isPopoverPresented = false
     @State var timelineColors: [Color] = [.blue, .red, .green]
     @State var isEditTimelinesActive = false
     @State var username = "test@gmail.com"
+    @State var firestoreManager = FirestoreManager()
     
     init(timelines: Binding<[Timeline]>, eventsPicsList: Binding<[[EventPic]]>) {
         self._timelines = timelines
@@ -55,7 +56,7 @@ struct ContentView: View {
             }.padding()
             HStack {
                 TabView {
-                    ForEach(0..<firestoreManager.timelines.count, id:\.self) {i in
+                    ForEach(0..<timelines.count, id:\.self) {i in
                         VStack {
                             HStack {
                                 Text(timelines[i].name).font(.system(size: 24)).bold().foregroundColor(.blue)

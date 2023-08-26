@@ -9,58 +9,43 @@ import Firebase
 import FirebaseFirestoreSwift
 import FirebaseStorage
 import PhotosUI
+import SwiftUI
 
 class FirestoreManager: ObservableObject {
     @Published var timelines: [Timeline] = []
     @Published var images: [[EventPic]] = [[]]
     
-    init() {
-        fetchEvents()
-    }
-    
-    func fetchEvents() {
+    func fetchEvents(username: String) {
         let db = Firestore.firestore()
         let storage = Storage.storage()
-      let docRef = db.collection("Timelines").document("test@gmail.com")
+        let docRef = db.collection("Timelines").document(username.lowercased())
 
-      docRef.getDocument { document, error in
-        if let error = error as NSError? {
-            print("Error getting document: \(error.localizedDescription)")
-        }
-        else {
-          if let document = document {
-            do {
-                self.timelines = try document.data(as: Timelines.self).timelines
-            }
-            catch {
-              print(error)
-            }
-          }
-        }
-      }
-        // TODO: loop through events and download photos
-        var i = 0
-        for timeline in timelines {
-            var j = 0
-            self.images.append([])
-            for event in timeline.events  {
-                self.images[i].append(EventPic())
-                // Create a reference to the file you want to download
-                let storageRef = storage.reference().child(event.imageUrl)
-                // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
-                storageRef.getData(maxSize: 1 * 1024 * 1024) { data, error in
-                    if error != nil {
-                    // Uh-oh, an error occurred!
-                  } else {
-                    // Data for image is returned
-                      self.images[i][j].eventImage = UIImage(data: data!)
-                  }
+        docRef.getDocument { document, error in
+            if error == nil && document != nil {
+                do {
+                    self.timelines = try document!.data(as: Timelines.self).timelines
+                    for i in 0..<self.timelines.count {
+                        self.images.insert([], at: i)
+                        for j in 0..<self.timelines[i].events.count  {
+                            self.images[i].insert(EventPic(), at: j)
+                            // Create a reference to the file you want to download
+                            let storageRef = storage.reference().child(self.timelines[i].events[j].imageUrl)
+                            // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
+                            storageRef.getData(maxSize: 1 * 1024 * 1024) { data, error in
+                                if error != nil && data == nil {
+                                    print("Error occurred!!")
+                                } else {
+                                    // Data for image is returned
+                                    self.images[i][j].eventImage = UIImage(data: data!)
+                                }
+                            }
+                        }
+                    }
+                } catch {
+                    print("Error occurred!!")
                 }
-                j += 1
             }
-            i += 1
         }
-                
     }
     
     func upload(image: UIImage) -> String {
@@ -86,12 +71,10 @@ class FirestoreManager: ObservableObject {
     }
     
     func updateEvents(timelines: [Timeline], user: String) {
-        let locEvents = Timelines(username: user, timelines: timelines)
         let db = Firestore.firestore()
-        let storage = Storage.storage()
         let docRef = db.collection("Timelines").document(user)
         do {
-          try docRef.setData(from: locEvents)
+            try docRef.setData(from: Timelines(username: user.lowercased(), timelines: timelines))
         }
         catch {
           print(error)

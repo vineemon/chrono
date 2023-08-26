@@ -13,6 +13,9 @@ struct LoginView: View {
     @State var email = ""
     @State var password = ""
     @State var isLoginActive = false
+//    @State var timelines: [Timeline] = [Timeline(name: "Priyanka & Me", events: []), Timeline(name: "Dosa & Me", events: []), Timeline(name: "Aneet & Me", events: [])]
+//    @State var eventsPicsList: [[EventPic]] = [[EventPic()],[EventPic()],[]]
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -22,7 +25,7 @@ struct LoginView: View {
                     Text("Sign In")
                 }.buttonStyle(.borderedProminent)
             }.padding().navigationDestination(isPresented: $isLoginActive) {
-                ContentView(timelines: $firestoreManager.timelines, eventsPicsList: $firestoreManager.images).navigationBarHidden(true)
+                ContentView(timelines: $firestoreManager.timelines, eventsPicsList: $firestoreManager.images).environmentObject(firestoreManager).navigationBarHidden(true)
             }
         }
     }
@@ -34,6 +37,7 @@ struct LoginView: View {
             } else {
                 self.isLoginActive = true
                 print("success")
+                firestoreManager.fetchEvents(username: email)
             }
         }
     }
