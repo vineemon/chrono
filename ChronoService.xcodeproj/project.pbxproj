@@ -20,6 +20,7 @@
 		2D712C7C2A995404002416CE /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 2D712C7B2A995404002416CE /* FirebaseFirestore */; };
 		2D712C7E2A995404002416CE /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 2D712C7D2A995404002416CE /* FirebaseStorage */; };
 		2D712C802A9963C4002416CE /* FirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D712C7F2A9963C4002416CE /* FirestoreManager.swift */; };
+		2D712C832A99A070002416CE /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2D712C822A99A070002416CE /* FirebaseFirestoreSwift */; };
 		2D776DA22A859E7400035754 /* ChronoServiceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D776DA12A859E7400035754 /* ChronoServiceApp.swift */; };
 		2D776DA42A859E7400035754 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D776DA32A859E7400035754 /* ContentView.swift */; };
 		2D776DA62A859E7600035754 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D776DA52A859E7600035754 /* Assets.xcassets */; };
@@ -78,6 +79,7 @@
 				2D712C782A995404002416CE /* FirebaseDatabase in Frameworks */,
 				2D712C7E2A995404002416CE /* FirebaseStorage in Frameworks */,
 				2D712C762A995404002416CE /* FirebaseAuth in Frameworks */,
+				2D712C832A99A070002416CE /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,6 +100,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D712C812A99A070002416CE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		2D776D952A859E7400035754 = {
 			isa = PBXGroup;
 			children = (
@@ -105,6 +114,7 @@
 				2D776DB22A859E7700035754 /* ChronoServiceTests */,
 				2D776DBC2A859E7700035754 /* ChronoServiceUITests */,
 				2D776D9F2A859E7400035754 /* Products */,
+				2D712C812A99A070002416CE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -185,6 +195,7 @@
 				2D712C792A995404002416CE /* FirebaseDatabaseSwift */,
 				2D712C7B2A995404002416CE /* FirebaseFirestore */,
 				2D712C7D2A995404002416CE /* FirebaseStorage */,
+				2D712C822A99A070002416CE /* FirebaseFirestoreSwift */,
 			);
 			productName = ChronoService;
 			productReference = 2D776D9E2A859E7400035754 /* ChronoService.app */;
@@ -695,6 +706,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2D712C742A995404002416CE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		2D712C822A99A070002416CE /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2D712C742A995404002416CE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

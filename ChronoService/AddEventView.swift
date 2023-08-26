@@ -11,8 +11,10 @@ import PhotosUI
 struct AddEventView: View {
     @EnvironmentObject var firestoreManager: FirestoreManager
     @Binding var isPopoverPresented: Bool
-    @Binding var events: [Event]
+    @Binding var timelines: [Timeline]
+    @Binding var eventsPics: [EventPic]
     @Binding var username: String
+    var i: Int
     
     @State var date = Date()
     @State var title = ""
@@ -66,16 +68,11 @@ struct AddEventView: View {
     
     func submitEvent() {
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour], from: date)
-        // add event in order
-        var i = 0
-        while (i < self.events.count && self.events[i].date < date) {
-            i += 1
-        }
-        
-        let newEvent = Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text, title: title, photo: photo, eventImage: image, showEvents: false)
-        let index = self.events.insertionIndexOf(newEvent) { $0.date < $1.date }
-        self.events.insert(newEvent, at: index)
-        firestoreManager.updateEvents(events: self.events, user: username)
+        let newEvent = Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text, title: title, showEvents: false)
+        let index = self.timelines[i].events.insertionIndexOf(newEvent) { $0.date < $1.date }
+        self.timelines[i].events.insert(newEvent, at: index)
+        self.eventsPics.insert(EventPic(photo: photo, eventImage: image), at: index)
+        firestoreManager.updateEvents(timelines: self.timelines, user: username)
         self.isPopoverPresented = false
     }
 }

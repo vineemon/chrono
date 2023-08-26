@@ -17,8 +17,8 @@ struct ContentView: View {
     
     @EnvironmentObject var firestoreManager: FirestoreManager
     @State var isPopoverPresented = false
-    @State var eventsList: [[Event]] = [[],[],[]]
-    @State var timelineNames: [String] = ["Priyanka & Me", "Dosa & Me", "Aneet & Me"]
+    @State var timelines: [Timeline] = [Timeline(name: "Priyanka & Me", events: []), Timeline(name: "Dosa & Me", events: []), Timeline(name: "Aneet & Me", events: [])]
+    @State var eventsPicsList: [[EventPic]] = [[],[],[]]
     @State var timelineColors: [Color] = [.blue, .red, .green]
     @State var isEditTimelinesActive = false
     @State var username = "test@gmail.com"
@@ -52,25 +52,24 @@ struct ContentView: View {
             }.padding()
             HStack {
                 TabView {
-                    ForEach(0..<firestoreManager.events.count, id:\.self) {i in
-                        Text("My restaurant: \(firestoreManager.events[i].title)")
+                    ForEach(0..<firestoreManager.timelines.count, id:\.self) {i in
                         VStack {
                             HStack {
-                                Text(timelineNames[i]).font(.system(size: 24)).bold().foregroundColor(.blue)
+                                Text(timelines[i].name).font(.system(size: 24)).bold().foregroundColor(.blue)
                                 Button(action: addEvent) {
                                     Image(systemName: "plus")
                                 }.buttonStyle(.borderedProminent)
                                     .popover(isPresented: $isPopoverPresented) {
-                                        AddEventView(isPopoverPresented: $isPopoverPresented, events: $eventsList[i], username: $username).environmentObject(firestoreManager)
+                                        AddEventView(isPopoverPresented: $isPopoverPresented, timelines: $timelines, eventsPics: $eventsPicsList[i], username: $username, i: i).environmentObject(firestoreManager)
                                     }
                             }.padding()
                             ScrollView(.vertical) {
                                 HStack() {
                                     VStack{
-                                        EventScrollView(events: $eventsList[i])
+                                        EventScrollView(events: $timelines[i].events, eventsPics: $eventsPicsList[i])
                                         Spacer()
                                     }.frame(width: 300)
-                                    Divider().frame(width: 1, height: 200 * CGFloat(eventsList[i].count + 3)).overlay(timelineColors[i])
+                                    Divider().frame(width: 1, height: 200 * CGFloat(timelines[i].events.count + 3)).overlay(timelineColors[i])
                                 }
                             }
                         }
@@ -89,6 +88,7 @@ struct ContentView: View {
 
 struct EventScrollView : View {
     @Binding var events: [Event]
+    @Binding var eventsPics: [EventPic]
     
     var body: some View {
         ForEach(0..<events.count, id:\.self) {i in
@@ -98,18 +98,19 @@ struct EventScrollView : View {
             } else if (events[i - 1].year != events[i].year || events[i - 1].month != events[i].month) {
                 NewDateView(event: events[i])
             }
-            NewEventView(events: $events, i: i)
+            NewEventView(events: $events, eventsPics: $eventsPics, i: i)
         }
     }
 }
 
 struct NewEventView: View {
     @Binding var events: [Event]
+    @Binding var eventsPics: [EventPic]
     var i: Int
 
     var body: some View {
         HStack {
-            if let unwrappedImage = events[i].eventImage {
+            if let unwrappedImage = eventsPics[i].eventImage {
                 Button(action: { showEventDetails(i: i) }) {
                     unwrappedImage
                         .resizable()
@@ -118,7 +119,7 @@ struct NewEventView: View {
                         .shadow(radius: 10)
                         .frame(width: 300, height: 200)
                 }.popover(isPresented: $events[i].showEvents) {
-                    ShowEventView(event: $events[i])
+                    ShowEventView(event: $events[i], eventPic: $eventsPics[i])
                 }
             }
         }
@@ -159,7 +160,7 @@ struct NewDateView: View {
     }
 }
 
-struct Event {
+struct Event: Codable {
     let date: Date
     let year: Int
     let month: Int
@@ -167,9 +168,17 @@ struct Event {
     let hour: Int
     let text: String
     let title: String
+    var showEvents: Bool
+}
+
+struct Timeline: Codable {
+    let name: String
+    var events: [Event]
+}
+
+struct EventPic {
     let photo: PhotosPickerItem?
     var eventImage: Image?
-    var showEvents: Bool
 }
 
 struct ContentView_Previews: PreviewProvider {

@@ -10,6 +10,7 @@ import PhotosUI
 
 struct ShowEventView: View {
     @Binding var event: Event
+    @Binding var eventPic: EventPic
     
     @State private var eventImage: Image?
     
@@ -26,7 +27,7 @@ struct ShowEventView: View {
             }
             Text("Description: " + event.text)
         }.task {
-            if let data = try? await event.photo?.loadTransferable(type: Data.self) {
+            if let data = try? await eventPic.photo?.loadTransferable(type: Data.self) {
                 if let uiImage = UIImage(data: data) {
                     eventImage = Image(uiImage: uiImage)
                     return

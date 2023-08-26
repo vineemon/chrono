@@ -6,89 +6,51 @@
 //
 
 import Firebase
+import FirebaseFirestoreSwift
 
 class FirestoreManager: ObservableObject {
-    @Published var events: [Event] = []
+    @Published var timelines: [Timeline] = []
     
     init() {
         fetchEvents()
     }
-
+    
     func fetchEvents() {
         let db = Firestore.firestore()
+      let docRef = db.collection("Timelines").document("test@gmail.com")
 
-        let docRef = db.collection("Events").document("test@gmail.com")
-
-        docRef.getDocument { (document, error) in
-            guard error == nil else {
-                print("error", error ?? "")
-                return
-            }
-
-            if let document = document, document.exists {
-                let data = document.data()
-                if let data = data {
-                    print("data", data)
-                    self.events = data["events"] as? [Event] ?? []
-                }
-            }
-
+      docRef.getDocument { document, error in
+        if let error = error as NSError? {
+            print("Error getting document: \(error.localizedDescription)")
         }
+        else {
+          if let document = document {
+            do {
+                self.timelines = try document.data(as: Timelines.self).timelines
+            }
+            catch {
+              print(error)
+            }
+          }
+        }
+      }
     }
     
-    func createEvents(events: [Event], user: String) {
+    func updateEvents(timelines: [Timeline], user: String) {
+        let locEvents = Timelines(username: user, timelines: timelines)
         let db = Firestore.firestore()
-
-        let docRef = db.collection("Events").document(user)
-
-        docRef.setData(["events": convertEventsToDic(events: events)]) { error in
-            if let error = error {
-                print("Error writing document: \(error)")
-            } else {
-                print("Document successfully written!")
-            }
+        let docRef = db.collection("Timelines").document(user)
+        do {
+          try docRef.setData(from: locEvents)
+        }
+        catch {
+          print(error)
         }
     }
-    
-    func updateEvents(events: [Event], user: String) {
-        let db = Firestore.firestore()
 
-        let docRef = db.collection("Events").document(user)
+}
 
-        // Don't forget the **merge: true** before closing the parentheses!
-        docRef.setData(["events": convertEventsToDic(events: events)], merge: true) { error in
-            if let error = error {
-                print("Error writing document: \(error)")
-            } else {
-                print("Document successfully merged!")
-            }
-        }
-    }
-    
-    private func convertEventsToDic(events: [Event]) -> [Any]{
-        var newEvents = [Any]()
-        
-        for event in events {
-            newEvents.append([
-                "date": event.date,
-                "year": event.year,
-                "month": event.month,
-                "day": event.day,
-                "hour": event.hour,
-                "text": event.text,
-                "title": event.title,
-                "showEvents": event.showEvents,
-            ])
-        }
-        return newEvents
-    }
-//
-//    private func convertDicToEvents(dict: [Any]) -> [[Event]]{
-//        var newEvents = [Event]()
-//
-//        for event in dict {
-//            newEvents.append(Event(date: event["date"] as? Date ?? Date.now, year: event["year"] as Int, month: event["month"] as Int, day: event["day"] as Int, hour: event["hour"] as Int, text: event["text"] as String, title: event["title"] as String, photo: nil, eventImage: nil, showEvents: event["showEvents"] as Bool))
-//        }
-//        return [newEvents]
-//    }
+struct Timelines: Codable {
+  @DocumentID var username: String?
+  var timelines: [Timeline]
 }
