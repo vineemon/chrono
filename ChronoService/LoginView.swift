@@ -9,6 +9,7 @@ import SwiftUI
 import Firebase
 
 struct LoginView: View {
+    @EnvironmentObject var firestoreManager: FirestoreManager
     @State var email = ""
     @State var password = ""
     @State var isLoginActive = false
@@ -21,7 +22,7 @@ struct LoginView: View {
                     Text("Sign In")
                 }.buttonStyle(.borderedProminent)
             }.padding().navigationDestination(isPresented: $isLoginActive) {
-                ContentView().navigationBarHidden(true)
+                ContentView(timelines: $firestoreManager.timelines).navigationBarHidden(true)
             }
         }
     }

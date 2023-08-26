@@ -9,19 +9,22 @@ import SwiftUI
 import PhotosUI
 
 struct ContentView: View {
-    init() {
-            UIPageControl.appearance().currentPageIndicatorTintColor = .systemBlue
-            UIPageControl.appearance().pageIndicatorTintColor = .gray
-            UIPageControl.appearance().tintColor = .gray
-        }
     
     @EnvironmentObject var firestoreManager: FirestoreManager
+    @Binding var timelines: [Timeline]
     @State var isPopoverPresented = false
-    @State var timelines: [Timeline] = [Timeline(name: "Priyanka & Me", events: []), Timeline(name: "Dosa & Me", events: []), Timeline(name: "Aneet & Me", events: [])]
-    @State var eventsPicsList: [[EventPic]] = [[],[],[]]
+    // TODO: Need to Read/Write this from Storage
+    @State var eventsPicsList: [[EventPic]] = [[EventPic(photo: nil)],[EventPic(photo: nil)],[]]
     @State var timelineColors: [Color] = [.blue, .red, .green]
     @State var isEditTimelinesActive = false
     @State var username = "test@gmail.com"
+    
+    init(timelines: Binding<[Timeline]>) {
+        self._timelines = timelines
+        UIPageControl.appearance().currentPageIndicatorTintColor = .systemBlue
+        UIPageControl.appearance().pageIndicatorTintColor = .gray
+        UIPageControl.appearance().tintColor = .gray
+    }
     
     var body: some View {
         NavigationStack {
@@ -182,8 +185,9 @@ struct EventPic {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    @State static var timelines: [Timeline] = [Timeline(name: "Priyanka & Me", events: []), Timeline(name: "Dosa & Me", events: []), Timeline(name: "Aneet & Me", events: [])]
     static var previews: some View {
-        ContentView()
+        ContentView(timelines: $timelines)
             .environmentObject(FirestoreManager())
     }
 }

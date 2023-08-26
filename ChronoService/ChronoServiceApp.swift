@@ -17,7 +17,7 @@ struct ChronoServiceApp: App {
         }
     var body: some Scene {
         WindowGroup {
-            ContentView().environmentObject(firestoreManager)
+            ContentView(timelines: $firestoreManager.timelines).environmentObject(firestoreManager)
         }
     }
 }
