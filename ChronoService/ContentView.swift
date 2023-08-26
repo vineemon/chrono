@@ -12,15 +12,15 @@ struct ContentView: View {
     
     @EnvironmentObject var firestoreManager: FirestoreManager
     @Binding var timelines: [Timeline]
+    @Binding var eventsPicsList: [[EventPic]]
     @State var isPopoverPresented = false
-    // TODO: Need to Read/Write this from Storage
-    @State var eventsPicsList: [[EventPic]] = [[EventPic(photo: nil)],[EventPic(photo: nil)],[]]
     @State var timelineColors: [Color] = [.blue, .red, .green]
     @State var isEditTimelinesActive = false
     @State var username = "test@gmail.com"
     
-    init(timelines: Binding<[Timeline]>) {
+    init(timelines: Binding<[Timeline]>, eventsPicsList: Binding<[[EventPic]]>) {
         self._timelines = timelines
+        self._eventsPicsList = eventsPicsList
         UIPageControl.appearance().currentPageIndicatorTintColor = .systemBlue
         UIPageControl.appearance().pageIndicatorTintColor = .gray
         UIPageControl.appearance().tintColor = .gray
@@ -115,7 +115,7 @@ struct NewEventView: View {
         HStack {
             if let unwrappedImage = eventsPics[i].eventImage {
                 Button(action: { showEventDetails(i: i) }) {
-                    unwrappedImage
+                    Image(uiImage: unwrappedImage)
                         .resizable()
                         .scaledToFit()
                         .cornerRadius(10)
@@ -172,6 +172,7 @@ struct Event: Codable {
     let text: String
     let title: String
     var showEvents: Bool
+    var imageUrl: String
 }
 
 struct Timeline: Codable {
@@ -180,14 +181,14 @@ struct Timeline: Codable {
 }
 
 struct EventPic {
-    let photo: PhotosPickerItem?
-    var eventImage: Image?
+    var eventImage: UIImage?
 }
 
 struct ContentView_Previews: PreviewProvider {
     @State static var timelines: [Timeline] = [Timeline(name: "Priyanka & Me", events: []), Timeline(name: "Dosa & Me", events: []), Timeline(name: "Aneet & Me", events: [])]
+    @State static var eventsPicsList: [[EventPic]] = [[EventPic()],[EventPic()],[]]
     static var previews: some View {
-        ContentView(timelines: $timelines)
+        ContentView(timelines: $timelines, eventsPicsList: $eventsPicsList)
             .environmentObject(FirestoreManager())
     }
 }

@@ -20,7 +20,7 @@ struct AddEventView: View {
     @State var title = ""
     @State var text = ""
     @State var photo: PhotosPickerItem?
-    @State var image: Image?
+    @State var image: UIImage?
     
     var body: some View {
         
@@ -49,7 +49,7 @@ struct AddEventView: View {
                 Task {
                     if let data = try? await photo.unsafelyUnwrapped.loadTransferable(type: Data.self) {
                         if let uiImage = UIImage(data: data) {
-                            image = Image(uiImage: uiImage)
+                            image = uiImage
                             return
                         }
                     }
@@ -68,11 +68,13 @@ struct AddEventView: View {
     
     func submitEvent() {
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour], from: date)
-        let newEvent = Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text, title: title, showEvents: false)
+        let url = firestoreManager.upload(image: image!)
+        let newEvent = Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text, title: title, showEvents: false, imageUrl: url)
         let index = self.timelines[i].events.insertionIndexOf(newEvent) { $0.date < $1.date }
         self.timelines[i].events.insert(newEvent, at: index)
-        self.eventsPics.insert(EventPic(photo: photo, eventImage: image), at: index)
+        self.eventsPics.insert(EventPic(eventImage: image), at: index)
         firestoreManager.updateEvents(timelines: self.timelines, user: username)
+        
         self.isPopoverPresented = false
     }
 }

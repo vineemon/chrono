@@ -17,7 +17,7 @@ struct ChronoServiceApp: App {
         }
     var body: some Scene {
         WindowGroup {
-            ContentView(timelines: $firestoreManager.timelines).environmentObject(firestoreManager)
+            ContentView(timelines: $firestoreManager.timelines, eventsPicsList: $firestoreManager.images).environmentObject(firestoreManager)
         }
     }
 }

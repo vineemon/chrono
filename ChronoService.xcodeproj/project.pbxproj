@@ -28,6 +28,7 @@
 		2D776DB42A859E7700035754 /* ChronoServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D776DB32A859E7700035754 /* ChronoServiceTests.swift */; };
 		2D776DBE2A859E7700035754 /* ChronoServiceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D776DBD2A859E7700035754 /* ChronoServiceUITests.swift */; };
 		2D776DC02A859E7700035754 /* ChronoServiceUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D776DBF2A859E7700035754 /* ChronoServiceUITestsLaunchTests.swift */; };
+		2DAA32372A9A599F00BD1A0A /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DAA32362A9A599F00BD1A0A /* StorageManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		2D776DB92A859E7700035754 /* ChronoServiceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChronoServiceUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D776DBD2A859E7700035754 /* ChronoServiceUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChronoServiceUITests.swift; sourceTree = "<group>"; };
 		2D776DBF2A859E7700035754 /* ChronoServiceUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChronoServiceUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		2DAA32362A9A599F00BD1A0A /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,7 @@
 				2D712C6E2A994CB0002416CE /* LoginView.swift */,
 				2D712C702A994CDD002416CE /* RegistrationView.swift */,
 				2D712C7F2A9963C4002416CE /* FirestoreManager.swift */,
+				2DAA32362A9A599F00BD1A0A /* StorageManager.swift */,
 			);
 			path = ChronoService;
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 				2D712C712A994CDD002416CE /* RegistrationView.swift in Sources */,
 				2D6175D62A86F0E800C4FFC4 /* AddEventView.swift in Sources */,
 				2D776DA22A859E7400035754 /* ChronoServiceApp.swift in Sources */,
+				2DAA32372A9A599F00BD1A0A /* StorageManager.swift in Sources */,
 				2D712C802A9963C4002416CE /* FirestoreManager.swift in Sources */,
 				2D712C6D2A992D31002416CE /* EditTimelinesView.swift in Sources */,
 			);

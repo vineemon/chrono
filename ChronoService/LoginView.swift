@@ -22,7 +22,7 @@ struct LoginView: View {
                     Text("Sign In")
                 }.buttonStyle(.borderedProminent)
             }.padding().navigationDestination(isPresented: $isLoginActive) {
-                ContentView(timelines: $firestoreManager.timelines).navigationBarHidden(true)
+                ContentView(timelines: $firestoreManager.timelines, eventsPicsList: $firestoreManager.images).navigationBarHidden(true)
             }
         }
     }
