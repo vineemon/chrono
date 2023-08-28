@@ -9,40 +9,39 @@ import SwiftUI
 
 struct CreateTimelineView: View {
     
-    @State var date = Date()
+    @Binding var timelines: [Timeline]
+    @Binding var eventsPicsList: [[EventPic]]
     @State var title = ""
-    @State var text = ""
+    @State var isContentViewActive = false
     
     var body: some View {
-        VStack {
-            HStack{
-                Text("Timeline Name")
-                TextField("Priyanka & Me", text: $title)
+        NavigationStack {
+            VStack {
+                HStack{
+                    Text("Timeline Name")
+                    TextField("Robert", text: $title)
+                }
+                
+                Button(action: submitTimeline) {
+                    Text("Submit")
+                }.buttonStyle(.borderedProminent)
+                    .frame(alignment: .bottom)
+            }.padding()
+            .navigationTitle("Create Timeline")
+            .navigationDestination(isPresented: $isContentViewActive) {
+                ContentView(timelines: $timelines, eventsPicsList: $eventsPicsList)
             }
-            HStack{
-                Text("Timeline Color")
-                TextField("Red", text: $text)
-            }
-            
-
-            
-            Button(action: submitTimeline) {
-                Text("Submit")
-            }.buttonStyle(.borderedProminent)
-                .frame(alignment: .bottom)
-        }.padding()
+        }
     }
     
     func submitTimeline() {
-//        let components = Calendar.current.dateComponents([.year, .month, .day, .hour], from: date)
-//        self.events.append(Event(date: date, year: components.year ?? 0, month: components.month ?? 0, day: components.day ?? 0, hour: components.hour ?? 0, text: text, title: title, photo: photo, eventImage: image, showEvents: false))
-//        self.events.sort{$0.date < $1.date}
-//        self.isPopoverPresented = false
+        self.timelines.append(Timeline(name: title, events: []))
+        self.isContentViewActive = true
     }
 }
 
-struct CreateTimelineView_Previews: PreviewProvider {
-    static var previews: some View {
-        CreateTimelineView()
-    }
-}
+//struct CreateTimelineView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CreateTimelineView()
+//    }
+//}

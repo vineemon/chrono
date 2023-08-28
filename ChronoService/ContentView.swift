@@ -14,8 +14,10 @@ struct ContentView: View {
     @Binding var timelines: [Timeline]
     @Binding var eventsPicsList: [[EventPic]]
     @State var isPopoverPresented = false
-    @State var timelineColors: [Color] = [.blue, .red, .green]
     @State var isEditTimelinesActive = false
+    @State var isCreateTimelinesActive = false
+    @State var isSettingsActive = false
+    @State var isLoggedOut = false
     @State var username = "test@gmail.com"
     @State var firestoreManager = FirestoreManager()
     
@@ -35,17 +37,22 @@ struct ContentView: View {
                     Spacer()
                     Menu {
                         Button {
+                            self.isCreateTimelinesActive = true
+                        } label: {
+                            Label("Create Timeline", systemImage: "plus.square.fill.on.square.fill")
+                        }
+                        Button {
                             self.isEditTimelinesActive = true
                         } label: {
                             Label("Edit Timelines", systemImage: "plus.square.fill.on.square.fill")
                         }
                         Button {
-                            self.isEditTimelinesActive = true
+                            self.isSettingsActive = true
                         } label: {
                             Label("Settings", systemImage: "gearshape.fill")
                         }
                         Button {
-                            self.isEditTimelinesActive = true
+                            self.isLoggedOut = true
                         } label: {
                             Label("Logout", systemImage: "rectangle.portrait.and.arrow.right.fill")
                         }
@@ -73,7 +80,7 @@ struct ContentView: View {
                                         EventScrollView(events: $timelines[i].events, eventsPics: $eventsPicsList[i])
                                         Spacer()
                                     }.frame(width: 300)
-                                    Divider().frame(width: 1, height: 200 * CGFloat(timelines[i].events.count + 3)).overlay(timelineColors[i])
+                                    Divider().frame(width: 1, height: 200 * CGFloat(timelines[i].events.count + 3)).overlay(.blue)
                                 }
                             }
                         }
@@ -81,6 +88,8 @@ struct ContentView: View {
                 }.tabViewStyle(.page)
             }.navigationDestination(isPresented: $isEditTimelinesActive) {
                 EditTimelinesView()
+            }.navigationDestination(isPresented: $isCreateTimelinesActive) {
+                CreateTimelineView(timelines: $timelines, eventsPicsList: $eventsPicsList)
             }
         }
     }

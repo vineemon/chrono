@@ -19,11 +19,17 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                Spacer()
                 TextField("Email", text: $email)
                 SecureField("Password", text: $password)
                 Button(action: login) {
                     Text("Sign In")
                 }.buttonStyle(.borderedProminent)
+                
+                Spacer()
+                NavigationLink("Sign Up for Chrono") {
+                    RegistrationView().environmentObject(firestoreManager)
+                    }
             }.padding().navigationDestination(isPresented: $isLoginActive) {
                 ContentView(timelines: $firestoreManager.timelines, eventsPicsList: $firestoreManager.images).environmentObject(firestoreManager).navigationBarHidden(true)
             }
